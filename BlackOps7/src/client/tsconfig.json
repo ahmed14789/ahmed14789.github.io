@@ -1,8 +1,0 @@
-{
-    "compilerOptions": {
-        "moduleResolution": "node",
-        "strict": true,
-        "lib": ["es5", "es6","dom"]
-    },
-    "include": ["**/*.ts"]
-}
