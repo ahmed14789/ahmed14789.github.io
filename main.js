@@ -1,4 +1,4 @@
-import * as THREE from 'three'
+import * as THREE from 'BlackOps7/node_modules/three/build/three.js'
 import { PointerLockControls } from 'three/examples/jsm/controls/PointerLockControls'
 import { FBXLoader } from 'three/examples/jsm/loaders/FBXLoader'
 import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader'
