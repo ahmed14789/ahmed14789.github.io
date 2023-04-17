@@ -1,7 +1,7 @@
 import * as THREE from '/node_modules/three/build/three.module.js'
-import { PointerLockControls } from 'three/examples/jsm/controls/PointerLockControls'
-import { FBXLoader } from 'three/examples/jsm/loaders/FBXLoader'
-import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader'
+import { PointerLockControls } from '/node_modules/three/examples/jsm/controls/PointerLockControls.js'
+import { FBXLoader } from '/node_modules/three/examples/jsm/loaders/FBXLoader.js'
+import { GLTFLoader } from '/node_modules/three/examples/jsm/loaders/GLTFLoader.js'
 
 let score  = 0;
 let ammo  = 6;
