@@ -43,7 +43,7 @@ animate();
 
 function init() {
     
-    document.getElementById('title').innerHTML = "Loading...";
+    document.getElementById('title').innerHTML = "Loading... "+((loadingProgress/40)*100)+"%";
     camera = new THREE.PerspectiveCamera( 75, window.innerWidth / window.innerHeight, 1, 1000 );
     camera.position.y = 10;
 
@@ -185,7 +185,6 @@ function init() {
                 intersects[0].object.material.transparent = true;
                 intersects[0].object.material.needsUpdate = true;
                 scene.remove( intersects[0].object );
-                console.log(objects[0].type);
                 objects.splice( objects.indexOf( intersects[0].object ), 1 );
                 score++;
                 document.getElementById("score").innerHTML = "Score: " + score;
@@ -249,38 +248,7 @@ function init() {
     const floor = new THREE.Mesh( floorGeometry, floorMaterial );
     scene.add( floor );
 
-    // objects
-
-    const boxGeometry = new THREE.BoxGeometry( 20, 20, 20 ).toNonIndexed();
-
-    position = boxGeometry.attributes.position;
-    const colorsBox = [];
-
-    for ( let i = 0, l = position.count; i < l; i ++ ) {
-
-        color.setHSL( Math.random() * 0.3 + 0.5, 0.75, Math.random() * 0.25 + 0.75 );
-        colorsBox.push( color.r, color.g, color.b );
-
-    }
-
-    boxGeometry.setAttribute( 'color', new THREE.Float32BufferAttribute( colorsBox, 3 ) );
-
-    /*for ( let i = 0; i < 500; i ++ ) {
-
-        const boxMaterial = new THREE.MeshPhongMaterial( { specular: 0xffffff, flatShading: true, vertexColors: true } );
-        boxMaterial.color.setHSL( Math.random() * 0.2 + 0.5, 0.75, Math.random() * 0.25 + 0.75 );
-
-        const box = new THREE.Mesh( boxGeometry, boxMaterial );
-        box.position.x = Math.floor( Math.random() * 20 - 10 ) * 20;
-        box.position.y = Math.floor( Math.random() * 20 ) * 20 + 10;
-        box.position.z = Math.floor( Math.random() * 20 - 10 ) * 20;
-
-        scene.add( box );
-        objects.push( box );
-
-    }*/
-    gltfLoader = new GLTFLoader();
-    
+    gltfLoader = new GLTFLoader();    
 
     for ( let i = 0; i < 20; i ++ ) {
         fbxLoader.load(
@@ -299,11 +267,10 @@ function init() {
                 object.scale.set(0.06, 0.06, 0.06);
                 scene.add(object)
                 modelReady = true; 
-                objects.push(object);       
+                objects.push(object);
+                loadingProgress += 1;       
             },
-            (xhr) => {
-                console.log((xhr.loaded / xhr.total) * 100 + '% loaded')
-            },
+            (xhr) => {},
             (error) => {
                 console.log(error)
             }
@@ -356,8 +323,16 @@ function onWindowResize() {
 }
 
 function animate() {
-    if(loadingProgress == 20){
+    if(loadingProgress == 40){
         document.getElementById('title').innerHTML = "Click to play ";
+        objects.forEach((object) => {
+        object.lookAt(camera.position);
+        object.translateZ(0.1);
+        object.position.y = 0.8;
+        object.rotation.set(0,0,0)
+    })
+    }else{
+        document.getElementById('title').innerHTML = "Loading... "+((loadingProgress/40)*100)+"%";
     }
     requestAnimationFrame( animate );
 
@@ -369,55 +344,35 @@ function animate() {
 
     if ( controls.isLocked === true ) {
 
-        /*raycaster.ray.origin.copy( controls.getObject().position );
-        raycaster.ray.origin.y -= 10;
-
-        const intersections = raycaster.intersectObjects( objects, false );
-
-        const onObject = intersections.length > 0;*/
 
         const delta = ( time - prevTime ) / 1000;
 
         velocity.x -= velocity.x * 10.0 * delta;
         velocity.z -= velocity.z * 10.0 * delta;
 
-        velocity.y -= 9.8 * 100.0 * delta; // 100.0 = mass
+        velocity.y -= 9.8 * 100.0 * delta; 
 
         direction.z = Number( moveForward ) - Number( moveBackward );
         direction.x = Number( moveRight ) - Number( moveLeft );
-        direction.normalize(); // this ensures consistent movements in all directions
+        direction.normalize(); 
 
         if ( moveForward || moveBackward ) velocity.z -= direction.z * 400.0 * delta;
         if ( moveLeft || moveRight ) velocity.x -= direction.x * 400.0 * delta;
 
-        /*if ( onObject === true ) {
-
-            velocity.y = Math.max( 0, velocity.y );
-            canJump = true;
-
-        }*/
-
         controls.moveRight( - velocity.x * delta );
         controls.moveForward( - velocity.z * delta );
 
-        controls.getObject().position.y += ( velocity.y * delta ); // new behavior
+        controls.getObject().position.y += ( velocity.y * delta );
 
         if ( controls.getObject().position.y < 10 ) {
 
             velocity.y = 0;
             controls.getObject().position.y = 10;
-
             canJump = true;
 
         }
 
     }
-    objects.forEach((object) => {
-            object.lookAt(camera.position);
-            object.translateZ(0.1);
-            object.position.y = 0.8;
-            object.rotation.set(0,0,0)
-    })
 
     prevTime = time;
 
